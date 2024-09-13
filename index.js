@@ -1,10 +1,15 @@
 import express from 'express';
 import connectDB from './db.js';
 
+import User from './models/User.js';
+
 const app = express();
 
-app.get('/', (req, res) => {
-  res.send('Hello World!');
+app.get('/', async (req, res) => {
+  const result = await User.create({
+    name: 'Test User',
+  });
+  res.send(result);
 });
 
 app.listen(3000, () => {
