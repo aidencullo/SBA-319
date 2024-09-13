@@ -77,6 +77,16 @@ router.delete('/:id', getPost, async (req, res) => {
   }
 });
 
+// DELETE all posts
+router.delete('/', async (req, res) => {
+  try {
+    await Post.deleteMany();
+    res.json({ message: 'All posts deleted' });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
 // Middleware function to get post by ID
 async function getPost(req, res, next) {
   let post;

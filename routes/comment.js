@@ -77,6 +77,16 @@ router.delete('/:id', getComment, async (req, res) => {
   }
 });
 
+// DELETE all comments
+router.delete('/', async (req, res) => {
+  try {
+    await Comment.deleteMany();
+    res.json({ message: 'All comments deleted' });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
 // Middleware function to get comment by ID
 async function getComment(req, res, next) {
   let comment;

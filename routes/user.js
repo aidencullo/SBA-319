@@ -77,6 +77,16 @@ router.delete('/:id', getUser, async (req, res) => {
   }
 });
 
+// DELETE all users
+router.delete('/', async (req, res) => {
+  try {
+    await User.deleteMany();
+    res.json({ message: 'All users deleted' });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
 // Middleware function to get user by ID
 async function getUser(req, res, next) {
   let user;
