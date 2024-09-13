@@ -4,6 +4,7 @@ import connectDB from './db.js';
 import user from './routes/user.js';
 import post from './routes/post.js';
 import comment from './routes/comment.js';
+import seedData from './seed/data.js';
 
 const app = express();
 
@@ -17,7 +18,8 @@ app.use('/users', user);
 app.use('/posts', post);
 app.use('/comments', comment);
 
-app.listen(3000, () => {
+app.listen(3000, async () => {
   console.log('Server is running on port 3000');
   connectDB();
+  await seedData();
 });
