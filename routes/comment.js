@@ -21,9 +21,9 @@ router.get('/:id', getComment, (req, res) => {
 // POST a new comment
 router.post('/', async (req, res) => {
   const comment = new Comment({
-    name: req.body.name,
-    email: req.body.email,
-    // Add other fields as necessary
+    content: req.body.content, // Add content
+    author: req.body.author, // Add author
+    post: req.body.post, // Reference to post ID
   });
 
   try {
@@ -36,13 +36,15 @@ router.post('/', async (req, res) => {
 
 // UPDATE a comment
 router.patch('/:id', getComment, async (req, res) => {
-  if (req.body.name != null) {
-    res.comment.name = req.body.name;
+  if (req.body.content != null) {
+    res.comment.content = req.body.content;
   }
-  if (req.body.email != null) {
-    res.comment.email = req.body.email;
+  if (req.body.author != null) {
+    res.comment.author = req.body.author;
   }
-  // Update other fields as necessary
+  if (req.body.post != null) {
+    res.comment.post = req.body.post;
+  }
 
   try {
     const updatedComment = await res.comment.save();
@@ -54,10 +56,9 @@ router.patch('/:id', getComment, async (req, res) => {
 
 // UPDATE a comment (PUT)
 router.put('/:id', getComment, async (req, res) => {
-  // Update all fields
-  res.comment.name = req.body.name;
-  res.comment.email = req.body.email;
-  // Update other fields as necessary
+  res.comment.content = req.body.content;
+  res.comment.author = req.body.author;
+  res.comment.post = req.body.post;
 
   try {
     const updatedComment = await res.comment.save();

@@ -1,5 +1,6 @@
 import express from 'express';
 import User from '../models/User.js';
+import bcrypt from 'bcrypt'; // For password hashing
 
 const router = express.Router();
 
@@ -20,10 +21,16 @@ router.get('/:id', getUser, (req, res) => {
 
 // POST a new user
 router.post('/', async (req, res) => {
+  const { name, email, password, isAdmin } = req.body;
+
+  // Hash the password before storing it
+  const hashedPassword = await bcrypt.hash(password, 10);
+
   const user = new User({
-    name: req.body.name,
-    email: req.body.email,
-    // Add other fields as necessary
+    name,
+    email,
+    password: hashedPassword, // Store the hashed password
+    isAdmin: isAdmin || false, // Set to false by default
   });
 
   try {
@@ -34,15 +41,23 @@ router.post('/', async (req, res) => {
   }
 });
 
-// UPDATE a user
+// UPDATE a user (PATCH)
 router.patch('/:id', getUser, async (req, res) => {
-  if (req.body.name != null) {
-    res.user.name = req.body.name;
+  const { name, email, password, isAdmin } = req.body;
+
+  if (name != null) {
+    res.user.name = name;
   }
-  if (req.body.email != null) {
-    res.user.email = req.body.email;
+  if (email != null) {
+    res.user.email = email;
   }
-  // Update other fields as necessary
+  if (password != null) {
+    // Hash the new password before updating
+    res.user.password = await bcrypt.hash(password, 10);
+  }
+  if (isAdmin != null) {
+    res.user.isAdmin = isAdmin;
+  }
 
   try {
     const updatedUser = await res.user.save();
@@ -54,10 +69,18 @@ router.patch('/:id', getUser, async (req, res) => {
 
 // UPDATE a user (PUT)
 router.put('/:id', getUser, async (req, res) => {
-  // Update all fields
-  res.user.name = req.body.name;
-  res.user.email = req.body.email;
-  // Update other fields as necessary
+  const { name, email, password, isAdmin } = req.body;
+
+  // Replace all fields
+  res.user.name = name;
+  res.user.email = email;
+
+  // If password is provided, hash it
+  if (password != null) {
+    res.user.password = await bcrypt.hash(password, 10);
+  }
+
+  res.user.isAdmin = isAdmin || res.user.isAdmin;
 
   try {
     const updatedUser = await res.user.save();

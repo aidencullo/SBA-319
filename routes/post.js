@@ -22,8 +22,8 @@ router.get('/:id', getPost, (req, res) => {
 router.post('/', async (req, res) => {
   const post = new Post({
     name: req.body.name,
-    email: req.body.email,
-    // Add other fields as necessary
+    content: req.body.content, // Add content
+    author: req.body.author, // Add author
   });
 
   try {
@@ -39,10 +39,12 @@ router.patch('/:id', getPost, async (req, res) => {
   if (req.body.name != null) {
     res.post.name = req.body.name;
   }
-  if (req.body.email != null) {
-    res.post.email = req.body.email;
+  if (req.body.content != null) {
+    res.post.content = req.body.content;
   }
-  // Update other fields as necessary
+  if (req.body.author != null) {
+    res.post.author = req.body.author;
+  }
 
   try {
     const updatedPost = await res.post.save();
@@ -54,10 +56,9 @@ router.patch('/:id', getPost, async (req, res) => {
 
 // UPDATE a post (PUT)
 router.put('/:id', getPost, async (req, res) => {
-  // Update all fields
   res.post.name = req.body.name;
-  res.post.email = req.body.email;
-  // Update other fields as necessary
+  res.post.content = req.body.content;
+  res.post.author = req.body.author;
 
   try {
     const updatedPost = await res.post.save();
