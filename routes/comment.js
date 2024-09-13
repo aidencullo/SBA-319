@@ -52,6 +52,21 @@ router.patch('/:id', getComment, async (req, res) => {
   }
 });
 
+// UPDATE a comment (PUT)
+router.put('/:id', getComment, async (req, res) => {
+  // Update all fields
+  res.comment.name = req.body.name;
+  res.comment.email = req.body.email;
+  // Update other fields as necessary
+
+  try {
+    const updatedComment = await res.comment.save();
+    res.json(updatedComment);
+  } catch (err) {
+    res.status(400).json({ message: err.message });
+  }
+});
+
 // DELETE a comment
 router.delete('/:id', getComment, async (req, res) => {
   try {

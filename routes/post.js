@@ -52,6 +52,21 @@ router.patch('/:id', getPost, async (req, res) => {
   }
 });
 
+// UPDATE a post (PUT)
+router.put('/:id', getPost, async (req, res) => {
+  // Update all fields
+  res.post.name = req.body.name;
+  res.post.email = req.body.email;
+  // Update other fields as necessary
+
+  try {
+    const updatedPost = await res.post.save();
+    res.json(updatedPost);
+  } catch (err) {
+    res.status(400).json({ message: err.message });
+  }
+});
+
 // DELETE a post
 router.delete('/:id', getPost, async (req, res) => {
   try {
