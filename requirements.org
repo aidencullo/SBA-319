@@ -1,4 +1,4 @@
-* Objectives [85%]
+* Objectives [92%]
 ** DONE "Use at least three different data collections within the database (such as users, posts, or comments)."	5%
 ** DONE Utilize reasonable data modeling practices.	10%
 ** DONE "Create GET routes for all data that should be exposed to the client, using appropriate query commands to retrieve the data from the database."	10%
@@ -11,7 +11,7 @@
 ** DONE Utilize reasonable code organization practices.	5%
 ** DONE "Ensure that the program runs without errors (comment out things that do not work, and explain your blockers - you can still receive partial credit)."	10%
 ** DONE Commit frequently to the git repository.	5%
-** TODO "Include a README file that contains a description of your application.
+** DONE "Include a README file that contains a description of your application.
 ** DONE Level of effort displayed in creativity and user experience.	5%
 
 
