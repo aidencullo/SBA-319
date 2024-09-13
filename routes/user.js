@@ -1,10 +1,9 @@
 import express from 'express';
 import User from '../models/User.js';
-import bcrypt from 'bcrypt'; // For password hashing
+import bcrypt from 'bcrypt';
 
 const router = express.Router();
 
-// GET all users
 router.get('/', async (req, res) => {
   try {
     const users = await User.find();
@@ -14,23 +13,20 @@ router.get('/', async (req, res) => {
   }
 });
 
-// GET a single user
 router.get('/:id', getUser, (req, res) => {
   res.json(res.user);
 });
 
-// POST a new user
 router.post('/', async (req, res) => {
   const { name, email, password, isAdmin } = req.body;
 
-  // Hash the password before storing it
   const hashedPassword = await bcrypt.hash(password, 10);
 
   const user = new User({
     name,
     email,
-    password: hashedPassword, // Store the hashed password
-    isAdmin: isAdmin || false, // Set to false by default
+    password: hashedPassword,
+    isAdmin: isAdmin || false,
   });
 
   try {
@@ -41,7 +37,6 @@ router.post('/', async (req, res) => {
   }
 });
 
-// UPDATE a user (PATCH)
 router.patch('/:id', getUser, async (req, res) => {
   const { name, email, password, isAdmin } = req.body;
 
@@ -52,7 +47,6 @@ router.patch('/:id', getUser, async (req, res) => {
     res.user.email = email;
   }
   if (password != null) {
-    // Hash the new password before updating
     res.user.password = await bcrypt.hash(password, 10);
   }
   if (isAdmin != null) {
@@ -67,15 +61,12 @@ router.patch('/:id', getUser, async (req, res) => {
   }
 });
 
-// UPDATE a user (PUT)
 router.put('/:id', getUser, async (req, res) => {
   const { name, email, password, isAdmin } = req.body;
 
-  // Replace all fields
   res.user.name = name;
   res.user.email = email;
 
-  // If password is provided, hash it
   if (password != null) {
     res.user.password = await bcrypt.hash(password, 10);
   }
@@ -90,7 +81,6 @@ router.put('/:id', getUser, async (req, res) => {
   }
 });
 
-// DELETE a user
 router.delete('/:id', getUser, async (req, res) => {
   try {
     await res.user.remove();
@@ -100,7 +90,6 @@ router.delete('/:id', getUser, async (req, res) => {
   }
 });
 
-// DELETE all users
 router.delete('/', async (req, res) => {
   try {
     await User.deleteMany();
@@ -110,7 +99,22 @@ router.delete('/', async (req, res) => {
   }
 });
 
-// Middleware function to get user by ID
+router.post('/invalid', async (req, res) => {
+  const invalidUser = new User({
+    name: '',
+    email: 'invalid-email',
+    password: 'short',
+    isAdmin: 'notabool'
+  });
+
+  try {
+    const result = await invalidUser.save();
+    res.status(201).json(result);
+  } catch (err) {
+    res.status(400).json({ message: err.message });
+  }
+});
+
 async function getUser(req, res, next) {
   let user;
   try {
