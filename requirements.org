@@ -1,5 +1,5 @@
-* Objectives [0%]
-** TODO "Use at least three different data collections within the database (such as users, posts, or comments)."	5%
+* Objectives [7%]
+** DONE "Use at least three different data collections within the database (such as users, posts, or comments)."	5%
 ** TODO Utilize reasonable data modeling practices.	10%
 ** TODO "Create GET routes for all data that should be exposed to the client, using appropriate query commands to retrieve the data from the database."	10%
 ** TODO "Create POST routes for data, as appropriate, using appropriate insertion commands to add data to the database. At least one data collection should allow for client creation via a POST request."	10%
