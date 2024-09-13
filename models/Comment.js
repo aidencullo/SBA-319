@@ -4,6 +4,7 @@ const commentSchema = new mongoose.Schema({
   name: {
     type: String,
     required: true,
+    index: true,
   },
 });
 
