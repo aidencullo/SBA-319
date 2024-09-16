@@ -1,15 +1,24 @@
 import { expect } from 'chai';
 import request from 'supertest';
-import app from '../index.js';
+import mongoose from 'mongoose';
+import 'dotenv/config';
 
-describe('GET /', () => {
-  it('should return 200 OK with Hello World message', (done) => {
+import app from '../app.js';
+import User from '../models/User.js';
+
+before(async () => {
+  await mongoose.connect(process.env.ATLAS_URI);
+});
+
+describe('GET /users', function () {
+  it('should return an empty array when no users exist', (done) => {
     request(app)
-      .get('/')
+      .get('/users')
+      .expect(200)
       .end((err, res) => {
-        expect(res.status).to.equal(200);
-        expect(res.body.message).to.equal('Hello World!');
-        done();
+	if (err) return done(err);
+	expect(res.body).to.be.an('array').that.is.empty;
+	done();
       });
   });
 });
