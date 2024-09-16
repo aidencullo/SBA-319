@@ -23,3 +23,5 @@ app.listen(3000, async () => {
   connectDB();
   await seedData();
 });
+
+export default app;
