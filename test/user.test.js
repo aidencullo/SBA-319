@@ -8,9 +8,11 @@ import { connectDb, disconnectDb } from '../db/connect.js';
 
 before(async () => {
   await connectDb();
+  await User.deleteMany({})
 });
 
 after(async function () {
+  await User.deleteMany({})
   await disconnectDb();
 });
 
