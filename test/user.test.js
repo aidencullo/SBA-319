@@ -1,19 +1,15 @@
 import { expect } from 'chai';
 import request from 'supertest';
-import 'dotenv/config';
 
 import app from '../app.js';
 import User from '../models/User.js';
 import { connectDb, disconnectDb } from '../db/connect.js';
 
-// Set up database connection and cleanup
 before(async () => {
   await connectDb();
-  await User.deleteMany({});
 });
 
 after(async function () {
-  await User.deleteMany({});
   await disconnectDb();
 });
 
@@ -25,7 +21,6 @@ afterEach(async () => {
   await User.deleteMany({});
 });
 
-// Test for GET /users
 describe('GET /users', function () {
   it('should return an empty array when no users exist', (done) => {
     request(app)
@@ -39,7 +34,6 @@ describe('GET /users', function () {
   });
 });
 
-// Test for POST /users
 describe('POST /users', function () {
   it('should create a new user with name, email, and password', async () => {
     const newUser = {
@@ -51,7 +45,7 @@ describe('POST /users', function () {
     const res = await request(app)
       .post('/users')
       .send(newUser)
-      .expect(201); // Expecting HTTP status code 201 for created
+      .expect(201);
 
     expect(res.body).to.have.property('name', 'John Doe');
     expect(res.body).to.have.property('email', 'johndoe@example.com');
@@ -63,7 +57,6 @@ describe('POST /users', function () {
   });
 });
 
-// Test for GET /users/:id
 describe('GET /users/:id', function () {
   it('should return a user by id', async () => {
     const user = await User.create({
@@ -81,7 +74,6 @@ describe('GET /users/:id', function () {
   });
 });
 
-// Test for PUT /users/:id (full update)
 describe('PUT /users/:id', function () {
   it('should update an existing user', async () => {
     const user = await User.create({
@@ -110,7 +102,6 @@ describe('PUT /users/:id', function () {
   });
 });
 
-// Test for PATCH /users/:id (partial update)
 describe('PATCH /users/:id', function () {
   it('should partially update an existing user', async () => {
     const user = await User.create({
@@ -129,7 +120,7 @@ describe('PATCH /users/:id', function () {
       .expect(200);
 
     expect(res.body).to.have.property('name', 'Jane Johnson');
-    expect(res.body).to.have.property('email', 'janedoe@example.com'); // Email remains unchanged
+    expect(res.body).to.have.property('email', 'janedoe@example.com');
 
     const userInDb = await User.findById(user._id);
     expect(userInDb).to.have.property('name', 'Jane Johnson');
@@ -137,7 +128,6 @@ describe('PATCH /users/:id', function () {
   });
 });
 
-// Test for DELETE /users/:id
 describe('DELETE /users/:id', function () {
   it('should delete a user by id', async () => {
     const user = await User.create({
@@ -151,6 +141,6 @@ describe('DELETE /users/:id', function () {
       .expect(200);
 
     const userInDb = await User.findById(user._id);
-    expect(userInDb).to.be.null; // Ensure the user is deleted
+    expect(userInDb).to.be.null;
   });
 });
