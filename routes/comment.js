@@ -1,41 +1,49 @@
 import express from 'express';
 import Comment from '../models/Comment.js';
+import Post from '../models/Post.js';
+import error from '../utils/error.js';
 
 const router = express.Router();
 
-// GET all comments
-router.get('/', async (req, res) => {
+router.get('/', async (req, res, next) => {
   try {
     const comments = await Comment.find();
     res.json(comments);
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    next(error(500, err.message));
   }
 });
 
-// GET a single comment
 router.get('/:id', getComment, (req, res) => {
   res.json(res.comment);
 });
 
-// POST a new comment
-router.post('/', async (req, res) => {
+router.post('/', async (req, res, next) => {
+  if (req.body.post == null || req.body.post.length !== 24) {
+    return next(error(400, 'Invalid post ID'));
+  }
+
+  const response = await Post.findById(req.body.post);
+
+  if (await Post.findById(req.body.post) == null) {
+    return next(error(400, 'Invalid post ID'));
+  }
+
   const comment = new Comment({
-    content: req.body.content, // Add content
-    author: req.body.author, // Add author
-    post: req.body.post, // Reference to post ID
+    content: req.body.content,
+    author: req.body.author,
+    post: req.body.post,
   });
 
   try {
     const newComment = await comment.save();
     res.status(201).json(newComment);
   } catch (err) {
-    res.status(400).json({ message: err.message });
+    next(error(400, err.message));
   }
 });
 
-// UPDATE a comment
-router.patch('/:id', getComment, async (req, res) => {
+router.patch('/:id', getComment, async (req, res, next) => {
   if (req.body.content != null) {
     res.comment.content = req.body.content;
   }
@@ -50,12 +58,11 @@ router.patch('/:id', getComment, async (req, res) => {
     const updatedComment = await res.comment.save();
     res.json(updatedComment);
   } catch (err) {
-    res.status(400).json({ message: err.message });
+    next(error(400, err.message));
   }
 });
 
-// UPDATE a comment (PUT)
-router.put('/:id', getComment, async (req, res) => {
+router.put('/:id', getComment, async (req, res, next) => {
   res.comment.content = req.body.content;
   res.comment.author = req.body.author;
   res.comment.post = req.body.post;
@@ -64,31 +71,28 @@ router.put('/:id', getComment, async (req, res) => {
     const updatedComment = await res.comment.save();
     res.json(updatedComment);
   } catch (err) {
-    res.status(400).json({ message: err.message });
+    next(error(400, err.message));
   }
 });
 
-// DELETE a comment
-router.delete('/:id', getComment, async (req, res) => {
+router.delete('/:id', getComment, async (req, res, next) => {
   try {
     await Comment.deleteOne({ _id: res.comment.id });
     res.json({ message: 'Comment deleted' });
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    next(error(500, err.message));
   }
 });
 
-// DELETE all comments
-router.delete('/', async (req, res) => {
+router.delete('/', async (req, res, next) => {
   try {
     await Comment.deleteMany();
     res.json({ message: 'All comments deleted' });
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    next(error(500, err.message));
   }
 });
 
-// Middleware function to get comment by ID
 async function getComment(req, res, next) {
   if (req.params.id.length !== 24) {
     return next(error(400, 'Invalid comment ID'));
@@ -97,10 +101,10 @@ async function getComment(req, res, next) {
   try {
     comment = await Comment.findById(req.params.id);
     if (comment == null) {
-      return res.status(404).json({ message: 'Cannot find comment' });
+      return next(error(404, 'Cannot find comment'));
     }
   } catch (err) {
-    return res.status(500).json({ message: err.message });
+    return next(error(500, err.message));
   }
 
   res.comment = comment;
