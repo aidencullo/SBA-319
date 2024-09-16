@@ -1,17 +1,17 @@
 import { expect } from 'chai';
 import request from 'supertest';
-import mongoose from 'mongoose';
 import 'dotenv/config';
 
 import app from '../app.js';
 import User from '../models/User.js';
+import { connectDb, disconnectDb } from '../db/connect.js';
 
 before(async () => {
-  await mongoose.connect(process.env.ATLAS_URI);
+  await connectDb();
 });
 
 after(async function () {
-  await mongoose.disconnect();
+  await disconnectDb();
 });
 
 describe('GET /users', function () {
