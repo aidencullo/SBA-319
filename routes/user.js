@@ -20,6 +20,9 @@ router.get('/:id', getUser, (req, res) => {
 router.post('/', async (req, res) => {
   try {
     const { name, email, password, isAdmin } = req.body;
+    if (!name || !email || !password) {
+      return res.status(400).json({ message: 'Name, email and password are required' });
+    }
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
@@ -121,6 +124,9 @@ router.post('/invalid', async (req, res) => {
 });
 
 async function getUser(req, res, next) {
+  if (req.params.id.length !== 24) {
+    return res.status(400).json({ message: 'Invalid user ID' });
+  }
   let user;
   try {
     user = await User.findById(req.params.id);

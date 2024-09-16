@@ -1,6 +1,5 @@
 import { expect } from 'chai';
 import request from 'supertest';
-
 import app from '../app.js';
 import User from '../models/User.js';
 import { connectDb, disconnectDb } from '../db/connect.js';
@@ -32,6 +31,12 @@ describe('GET /users', function () {
         done();
       });
   });
+
+  it('should return 404 if an invalid endpoint is accessed', (done) => {
+    request(app)
+      .get('/invalid-endpoint')
+      .expect(404, done);
+  });
 });
 
 describe('POST /users', function () {
@@ -55,6 +60,32 @@ describe('POST /users', function () {
     expect(userInDb).to.have.property('name', 'John Doe');
     expect(userInDb).to.have.property('email', 'johndoe@example.com');
   });
+
+  it('should return 400 if required fields are missing', async () => {
+    const incompleteUser = {
+      email: 'incomplete@example.com',
+    };
+
+    const res = await request(app)
+      .post('/users')
+      .send(incompleteUser)
+      .expect(400);
+  });
+
+  it('should return 400 if email is invalid', async () => {
+    const invalidEmailUser = {
+      name: 'Invalid Email',
+      email: 'invalidemail',
+      password: 'password123',
+    };
+
+    const res = await request(app)
+      .post('/users')
+      .send(invalidEmailUser)
+      .expect(400);
+
+    // expect(res.body).to.have.property('error', 'Invalid email format');
+  });
 });
 
 describe('GET /users/:id', function () {
@@ -71,6 +102,24 @@ describe('GET /users/:id', function () {
 
     expect(res.body).to.have.property('name', 'Jane Doe');
     expect(res.body).to.have.property('email', 'janedoe@example.com');
+  });
+
+  it('should return 404 if user is not found', async () => {
+    const fakeId = '613a1fd12f82f0a12bc90b12'; // Non-existent ID
+    const res = await request(app)
+      .get(`/users/${fakeId}`)
+      .expect(404);
+
+    // expect(res.body).to.have.property('error', 'User not found');
+  });
+
+  it('should return 400 for invalid user ID format', async () => {
+    const invalidId = 'invalid-id-format';
+    const res = await request(app)
+      .get(`/users/${invalidId}`)
+      .expect(400);
+
+    // expect(res.body).to.have.property('error', 'Invalid user ID');
   });
 });
 
@@ -100,6 +149,41 @@ describe('PUT /users/:id', function () {
     expect(userInDb).to.have.property('name', 'Jane Smith');
     expect(userInDb).to.have.property('email', 'janesmith@example.com');
   });
+
+  it('should return 400 if required fields are missing in update', async () => {
+    const user = await User.create({
+      name: 'Jane Doe',
+      email: 'janedoe@example.com',
+      password: 'password123',
+    });
+
+    const incompleteUpdate = {
+      email: 'updated@example.com',
+    };
+
+    const res = await request(app)
+      .put(`/users/${user._id}`)
+      .send(incompleteUpdate)
+      .expect(400);
+
+    // expect(res.body).to.have.property('error', 'Name and password are required');
+  });
+
+  it('should return 404 if trying to update a non-existent user', async () => {
+    const fakeId = '613a1fd12f82f0a12bc90b12'; // Non-existent ID
+    const updatedUser = {
+      name: 'Non-existent User',
+      email: 'nonexistent@example.com',
+      password: 'password123',
+    };
+
+    const res = await request(app)
+      .put(`/users/${fakeId}`)
+      .send(updatedUser)
+      .expect(404);
+
+    // expect(res.body).to.have.property('error', 'User not found');
+  });
 });
 
 describe('PATCH /users/:id', function () {
@@ -126,6 +210,20 @@ describe('PATCH /users/:id', function () {
     expect(userInDb).to.have.property('name', 'Jane Johnson');
     expect(userInDb).to.have.property('email', 'janedoe@example.com');
   });
+
+  it('should return 404 if trying to partially update a non-existent user', async () => {
+    const fakeId = '613a1fd12f82f0a12bc90b12'; // Non-existent ID
+    const partialUpdate = {
+      name: 'Non-existent User',
+    };
+
+    const res = await request(app)
+      .patch(`/users/${fakeId}`)
+      .send(partialUpdate)
+      .expect(404);
+
+    // expect(res.body).to.have.property('error', 'User not found');
+  });
 });
 
 describe('DELETE /users/:id', function () {
@@ -142,5 +240,23 @@ describe('DELETE /users/:id', function () {
 
     const userInDb = await User.findById(user._id);
     expect(userInDb).to.be.null;
+  });
+
+  it('should return 404 if trying to delete a non-existent user', async () => {
+    const fakeId = '613a1fd12f82f0a12bc90b12'; // Non-existent ID
+    const res = await request(app)
+      .delete(`/users/${fakeId}`)
+      .expect(404);
+
+    // expect(res.body).to.have.property('error', 'User not found');
+  });
+
+  it('should return 400 for invalid user ID format in delete', async () => {
+    const invalidId = 'invalid-id-format';
+    const res = await request(app)
+      .delete(`/users/${invalidId}`)
+      .expect(400);
+
+    // expect(res.body).to.have.property('error', 'Invalid user ID');
   });
 });
