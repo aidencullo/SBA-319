@@ -1,4 +1,3 @@
-// controllers/userController.js
 import bcrypt from 'bcrypt';
 import User from '../models/User.js';
 import error from '../utils/error.js';
