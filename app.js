@@ -16,4 +16,9 @@ app.use('/users', user);
 app.use('/posts', post);
 app.use('/comments', comment);
 
+app.use((err, req, res, next) => {
+  res.status(err.status || 500);
+  res.json({ error: err.message });
+});
+
 export default app;

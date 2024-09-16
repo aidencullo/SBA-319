@@ -1,15 +1,17 @@
 import express from 'express';
-import User from '../models/User.js';
 import bcrypt from 'bcrypt';
+
+import User from '../models/User.js';
+import error from '../utils/error.js';
 
 const router = express.Router();
 
-router.get('/', async (req, res) => {
+router.get('/', async (req, res, next) => {
   try {
     const users = await User.find();
     res.json(users);
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    return next(error(500, err.message));
   }
 });
 
@@ -17,11 +19,12 @@ router.get('/:id', getUser, (req, res) => {
   res.json(res.user);
 });
 
-router.post('/', async (req, res) => {
+router.post('/', async (req, res, next) => {
   try {
     const { name, email, password, isAdmin } = req.body;
-    if (!name || !email || !password) {
-      return res.status(400).json({ message: 'Name, email and password are required' });
+
+    if (!password || password.length < 6) {
+      return next(error(400, 'Password must be at least 6 characters long'));
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -37,14 +40,14 @@ router.post('/', async (req, res) => {
       const newUser = await user.save();
       res.status(201).json(newUser);
     } catch (err) {
-      res.status(400).json({ message: err.message });
+      return next(error(400, err.message));
     }
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    return next(error(500, err.message));
   }
 });
 
-router.patch('/:id', getUser, async (req, res) => {
+router.patch('/:id', getUser, async (req, res, next) => {
   const { name, email, password, isAdmin } = req.body;
 
   if (name != null) {
@@ -64,11 +67,11 @@ router.patch('/:id', getUser, async (req, res) => {
     const updatedUser = await res.user.save();
     res.json(updatedUser);
   } catch (err) {
-    res.status(400).json({ message: err.message });
+    return next(error(400, err.message));
   }
 });
 
-router.put('/:id', getUser, async (req, res) => {
+router.put('/:id', getUser, async (req, res, next) => {
   const { name, email, password, isAdmin } = req.body;
 
   res.user.name = name;
@@ -84,30 +87,29 @@ router.put('/:id', getUser, async (req, res) => {
     const updatedUser = await res.user.save();
     res.json(updatedUser);
   } catch (err) {
-    res.status(400).json({ message: err.message });
+    return next(error(400, err.message));
   }
 });
 
-router.delete('/:id', getUser, async (req, res) => {
+router.delete('/:id', getUser, async (req, res, next) => {
   try {
     await User.deleteOne({ _id: res.user.id });
     res.json({ message: 'User deleted' });
   } catch (err) {
-    console.error(err)
-    res.status(500).json({ message: err.message });
+    return next(error(500, err.message));
   }
 });
 
-router.delete('/', async (req, res) => {
+router.delete('/', async (req, res, next) => {
   try {
     await User.deleteMany();
     res.json({ message: 'All users deleted' });
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    return next(error(500, err.message));
   }
 });
 
-router.post('/invalid', async (req, res) => {
+router.post('/invalid', async (req, res, next) => {
   const invalidUser = new User({
     name: '',
     email: 'invalid-email',
@@ -119,22 +121,22 @@ router.post('/invalid', async (req, res) => {
     const result = await invalidUser.save();
     res.status(201).json(result);
   } catch (err) {
-    res.status(400).json({ message: err.message });
+    return next(error(400, err.message));
   }
 });
 
 async function getUser(req, res, next) {
   if (req.params.id.length !== 24) {
-    return res.status(400).json({ message: 'Invalid user ID' });
+    return next(error(400, 'Invalid user ID'));
   }
   let user;
   try {
     user = await User.findById(req.params.id);
     if (user == null) {
-      return res.status(404).json({ message: 'Cannot find user' });
+      return next(error(404, 'User not found'));
     }
   } catch (err) {
-    return res.status(500).json({ message: err.message });
+    return next(error(500, err.message));
   }
 
   res.user = user;
