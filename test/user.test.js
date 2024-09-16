@@ -10,6 +10,10 @@ before(async () => {
   await mongoose.connect(process.env.ATLAS_URI);
 });
 
+after(async function () {
+  await mongoose.disconnect();
+});
+
 describe('GET /users', function () {
   it('should return an empty array when no users exist', (done) => {
     request(app)
