@@ -84,7 +84,6 @@ describe('POST /users', function () {
       .send(invalidEmailUser)
       .expect(400);
 
-    // expect(res.body).to.have.property('error', 'Invalid email format');
   });
 });
 
@@ -110,7 +109,6 @@ describe('GET /users/:id', function () {
       .get(`/users/${fakeId}`)
       .expect(404);
 
-    // expect(res.body).to.have.property('error', 'User not found');
   });
 
   it('should return 400 for invalid user ID format', async () => {
@@ -119,7 +117,6 @@ describe('GET /users/:id', function () {
       .get(`/users/${invalidId}`)
       .expect(400);
 
-    // expect(res.body).to.have.property('error', 'Invalid user ID');
   });
 });
 
@@ -166,7 +163,6 @@ describe('PUT /users/:id', function () {
       .send(incompleteUpdate)
       .expect(400);
 
-    // expect(res.body).to.have.property('error', 'Name and password are required');
   });
 
   it('should return 404 if trying to update a non-existent user', async () => {
@@ -182,7 +178,6 @@ describe('PUT /users/:id', function () {
       .send(updatedUser)
       .expect(404);
 
-    // expect(res.body).to.have.property('error', 'User not found');
   });
 });
 
@@ -222,7 +217,6 @@ describe('PATCH /users/:id', function () {
       .send(partialUpdate)
       .expect(404);
 
-    // expect(res.body).to.have.property('error', 'User not found');
   });
 });
 
@@ -248,7 +242,6 @@ describe('DELETE /users/:id', function () {
       .delete(`/users/${fakeId}`)
       .expect(404);
 
-    // expect(res.body).to.have.property('error', 'User not found');
   });
 
   it('should return 400 for invalid user ID format in delete', async () => {
@@ -257,6 +250,5 @@ describe('DELETE /users/:id', function () {
       .delete(`/users/${invalidId}`)
       .expect(400);
 
-    // expect(res.body).to.have.property('error', 'Invalid user ID');
   });
 });

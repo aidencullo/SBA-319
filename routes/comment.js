@@ -71,7 +71,7 @@ router.put('/:id', getComment, async (req, res) => {
 // DELETE a comment
 router.delete('/:id', getComment, async (req, res) => {
   try {
-    await res.comment.remove();
+    await Comment.deleteOne({ _id: res.comment.id });
     res.json({ message: 'Comment deleted' });
   } catch (err) {
     res.status(500).json({ message: err.message });
@@ -90,6 +90,9 @@ router.delete('/', async (req, res) => {
 
 // Middleware function to get comment by ID
 async function getComment(req, res, next) {
+  if (req.params.id.length !== 24) {
+    return next(error(400, 'Invalid comment ID'));
+  }
   let comment;
   try {
     comment = await Comment.findById(req.params.id);
