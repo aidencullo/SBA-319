@@ -2,7 +2,6 @@ import { expect } from 'chai';
 import request from 'supertest';
 import app from '../app.js';
 import User from '../models/User.js';
-import { connectDb, disconnectDb } from '../db/connect.js';
 
 describe('GET /users', function () {
   it('should return an empty array when no users exist', (done) => {

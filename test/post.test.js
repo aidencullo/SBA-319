@@ -2,7 +2,6 @@ import { expect } from 'chai';
 import request from 'supertest';
 import app from '../app.js'; // Adjust the path as necessary
 import Post from '../models/Post.js';
-import { connectDb, disconnectDb } from '../db/connect.js';
 
 describe('GET /posts', function () {
   it('should return an empty array when no posts exist', (done) => {
@@ -19,6 +18,14 @@ describe('GET /posts', function () {
   it('should return 404 if an invalid endpoint is accessed', (done) => {
     request(app)
       .get('/invalid-endpoint')
+      .expect(404, done);
+  });
+});
+
+describe('GET /posts/:id/comments', function () {
+  it('should return 404 if post does not exist', (done) => {
+    request(app)
+      .get('/posts/613a1fd12f82f0a12bc90b12/comments')
       .expect(404, done);
   });
 });
