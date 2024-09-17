@@ -4,14 +4,6 @@ import app from '../app.js'; // Adjust the path as necessary
 import Post from '../models/Post.js';
 import { connectDb, disconnectDb } from '../db/connect.js';
 
-beforeEach(async () => {
-  await Post.deleteMany({});
-});
-
-afterEach(async () => {
-  await Post.deleteMany({});
-});
-
 describe('GET /posts', function () {
   it('should return an empty array when no posts exist', (done) => {
     request(app)

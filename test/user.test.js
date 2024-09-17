@@ -4,14 +4,6 @@ import app from '../app.js';
 import User from '../models/User.js';
 import { connectDb, disconnectDb } from '../db/connect.js';
 
-beforeEach(async () => {
-  await User.deleteMany({});
-});
-
-afterEach(async () => {
-  await User.deleteMany({});
-});
-
 describe('GET /users', function () {
   it('should return an empty array when no users exist', (done) => {
     request(app)

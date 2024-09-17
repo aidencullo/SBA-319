@@ -5,16 +5,6 @@ import Comment from '../models/Comment.js';
 import Post from '../models/Post.js';
 import { connectDb, disconnectDb } from '../db/connect.js';
 
-beforeEach(async () => {
-  await Comment.deleteMany({});
-  await Post.deleteMany({});
-});
-
-afterEach(async () => {
-  await Comment.deleteMany({});
-  await Post.deleteMany({});
-});
-
 describe('GET /comments', function () {
   it('should return an empty array when no comments exist', (done) => {
     request(app)
