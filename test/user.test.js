@@ -4,14 +4,6 @@ import app from '../app.js';
 import User from '../models/User.js';
 import { connectDb, disconnectDb } from '../db/connect.js';
 
-before(async () => {
-  await connectDb();
-});
-
-after(async function () {
-  await disconnectDb();
-});
-
 beforeEach(async () => {
   await User.deleteMany({});
 });

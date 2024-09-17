@@ -68,7 +68,6 @@ export async function updateUser(req, res, next) {
 }
 
 export async function replaceUser(req, res, next) {
-  console.log('replaceUser');
   const { name, email, password, isAdmin } = req.body;
 
   res.user.name = name;

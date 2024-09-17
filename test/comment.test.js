@@ -5,14 +5,6 @@ import Comment from '../models/Comment.js';
 import Post from '../models/Post.js';
 import { connectDb, disconnectDb } from '../db/connect.js';
 
-before(async () => {
-  await connectDb();
-});
-
-after(async () => {
-  await disconnectDb();
-});
-
 beforeEach(async () => {
   await Comment.deleteMany({});
   await Post.deleteMany({});

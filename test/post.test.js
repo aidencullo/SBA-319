@@ -4,14 +4,6 @@ import app from '../app.js'; // Adjust the path as necessary
 import Post from '../models/Post.js';
 import { connectDb, disconnectDb } from '../db/connect.js';
 
-before(async () => {
-  await connectDb();
-});
-
-after(async function () {
-  await disconnectDb();
-});
-
 beforeEach(async () => {
   await Post.deleteMany({});
 });
